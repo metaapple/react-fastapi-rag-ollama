@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const API_URL = 'http://localhost:8000';
 
-export default function FileUpload() {
+export default function FileUpload({ onUploadSuccess }) {
     const [isDragging, setIsDragging] = useState(false);
     const [uploadStatus, setUploadStatus] = useState('idle'); // idle, uploading, success, error
     const [message, setMessage] = useState('');
@@ -25,33 +25,44 @@ export default function FileUpload() {
         setIsDragging(false);
         const files = e.dataTransfer.files;
         if (files.length > 0) {
-            handleFileUpload(files[0]);
+            handleFileUpload(files);
         }
     };
 
-    const handleFileUpload = async (file) => {
-        if (file.type !== 'application/pdf') {
+    const handleFileUpload = async (files) => {
+        // Validation loop
+        const validFiles = [];
+        for (let i = 0; i < files.length; i++) {
+            if (files[i].type === 'application/pdf' || files[i].type === 'text/plain') {
+                validFiles.push(files[i]);
+            }
+        }
+
+        if (validFiles.length === 0) {
             setUploadStatus('error');
-            setMessage('Only PDF files are allowed.');
+            setMessage('PDF 및 TXT 파일만 허용됩니다.');
             return;
         }
 
         setUploadStatus('uploading');
-        setMessage(`Uploading ${file.name}...`);
+        setMessage(`${validFiles.length}개 파일 업로드 중...`);
 
         const formData = new FormData();
-        formData.append('file', file);
+        validFiles.forEach(file => {
+            formData.append('files', file);
+        });
 
         try {
             const response = await axios.post(`${API_URL}/upload`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             setUploadStatus('success');
-            setMessage(`Successfully ingested ${response.data.chunks_ingested} chunks from ${file.name}`);
+            setMessage(`${response.data.processed_files.length}개 파일에서 총 ${response.data.total_chunks}개 청크가 성공적으로 처리되었습니다.`);
+            if (onUploadSuccess) onUploadSuccess();
         } catch (error) {
             console.error(error);
             setUploadStatus('error');
-            setMessage('Upload failed. Is the backend running?');
+            setMessage('업로드 실패. 백엔드가 실행 중인가요?');
         }
     };
 
@@ -77,8 +88,9 @@ export default function FileUpload() {
                     type="file"
                     ref={fileInputRef}
                     className="hidden"
-                    accept=".pdf"
-                    onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
+                    accept=".pdf,.txt"
+                    multiple
+                    onChange={(e) => e.target.files && handleFileUpload(e.target.files)}
                 />
 
                 {/* Animated Background Gradients */}
@@ -101,10 +113,10 @@ export default function FileUpload() {
                     </div>
 
                     <h3 className="text-lg font-bold text-slate-800 group-hover:text-blue-700 transition-colors">
-                        {uploadStatus === 'uploading' ? 'Processing PDF...' : 'Upload PDF'}
+                        {uploadStatus === 'uploading' ? '문서 처리 중...' : '문서 업로드'}
                     </h3>
                     <p className="text-sm text-slate-500 text-center mt-1 font-medium group-hover:text-blue-500/80 transition-colors">
-                        Drag & drop or Click to Browse
+                        드래그 앤 드롭 또는 클릭하여 탐색
                     </p>
                 </div>
             </motion.div>
@@ -115,8 +127,8 @@ export default function FileUpload() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
-                        className={`mt-4 p-3 rounded-lg text-sm text-center border ${uploadStatus === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-200' :
-                            uploadStatus === 'success' ? 'bg-green-500/10 border-green-500/20 text-green-200' :
+                        className={`mt-4 p-3 rounded-lg text-sm text-center border ${uploadStatus === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-600' :
+                            uploadStatus === 'success' ? 'bg-blue-500/10 border-blue-500/20 text-red-600 font-bold' :
                                 'bg-surfaceHighlight border-black/5 text-textMuted'
                             }`}
                     >

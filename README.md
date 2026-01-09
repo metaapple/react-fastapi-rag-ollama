@@ -1,6 +1,6 @@
 # Samsung RAG Intelligence Agent
 
-An advanced local AI agent built for Samsung Electronics, featuring a secure RAG (Retrieval-Augmented Generation) system, dynamic UI, and local LLM integration.
+An advanced local AI agent built for Samsong Electronics, featuring a secure RAG (Retrieval-Augmented Generation) system, dynamic UI, and local LLM integration.
 
 ## 🌟 Key Features
 
@@ -63,4 +63,4 @@ The UI is built with Tailwind CSS and allows for easy customization in `frontend
 *   **Colors**: Custom palette (`background`, `primary`, `accent`) extending Tailwind defaults.
 
 ---
-*Internal Use Only - Samsung Electronics*
+*Internal Use Only - Samsong Electronics*

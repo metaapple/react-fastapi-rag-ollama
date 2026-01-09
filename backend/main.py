@@ -33,6 +33,7 @@ def get_db():
 
 class ChatRequest(BaseModel):
     message: str
+    source_filter: str = "All Documents"
 
 class ChatResponse(BaseModel):
     response: str
@@ -46,21 +47,42 @@ class MessageHistory(BaseModel):
         orm_mode = True
 
 @app.post("/upload")
-async def upload_pdf(file: UploadFile = File(...)):
-    if not file.filename.endswith('.pdf'):
-        raise HTTPException(status_code=400, detail="Only PDF files are allowed")
+def upload_documents(files: List[UploadFile] = File(...)):
+    total_chunks = 0
+    processed_files = []
     
-    temp_file_path = f"temp_{file.filename}"
-    with open(temp_file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    
-    try:
-        num_chunks = rag_service.ingest_pdf(temp_file_path)
-    finally:
-        if os.path.exists(temp_file_path):
-            os.remove(temp_file_path)
+    for file in files:
+        filename = file.filename.lower()
+        if not (filename.endswith('.pdf') or filename.endswith('.txt')):
+            continue # Skip unsupported, or raise error? Let's skip for now or better warn.
+        
+        temp_file_path = f"temp_{file.filename}"
+        with open(temp_file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        
+        try:
+            num_chunks = rag_service.ingest_document(temp_file_path, file.filename)
+            total_chunks += num_chunks
+            processed_files.append(file.filename)
+        finally:
+            if os.path.exists(temp_file_path):
+                os.remove(temp_file_path)
             
-    return {"filename": file.filename, "chunks_ingested": num_chunks, "status": "success"}
+    return {"status": "success", "processed_files": processed_files, "total_chunks": total_chunks}
+
+@app.get("/stats")
+def get_stats():
+    return {
+        "count": rag_service.get_document_count(),
+        "sources": rag_service.get_unique_sources()
+    }
+
+@app.post("/reset")
+def reset_db(db: Session = Depends(get_db)):
+    rag_service.reset_database()
+    db.query(ChatMessage).delete()
+    db.commit()
+    return {"status": "Database Reset"}
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest, db: Session = Depends(get_db)):
@@ -71,7 +93,7 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     
     # 2. Get RAG Response
     try:
-        ai_text = rag_service.query_rag(request.message)
+        ai_text = rag_service.query_rag(request.message, request.source_filter)
     except Exception as e:
         ai_text = "Sorry, I encountered an error processing your request."
         print(f"RAG Error: {e}")
