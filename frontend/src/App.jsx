@@ -41,12 +41,10 @@ function App() {
 
                 {/* Header */}
                 <div className="text-center space-y-6">
-                    <div className="flex justify-center">
-                        <img src="/logo.png" alt="Samsung Intelligence Logo" className="w-24 h-24 object-contain drop-shadow-xl animate-float" />
-                    </div>
+
                     <div>
                         <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent tracking-tighter">
-                            Samsung <span className="text-secondary">Intelligence</span>
+                            Samsong <span className="text-secondary">Intelligence</span>
                         </h1>
                         <p className="text-textMuted text-lg max-w-2xl mx-auto mt-4">
                             로컬 Gemma 3 & ChromaDB 기반 보안 RAG 에이전트

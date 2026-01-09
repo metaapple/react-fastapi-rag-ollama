@@ -112,7 +112,7 @@ export default function ChatInterface({ refreshTrigger }) {
                         >
                             <div className={`
                 w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm
-                ${msg.role === 'user' ? 'bg-emerald-600 text-white' : 'bg-white text-emerald-600 border border-emerald-100'}
+                ${msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-white text-emerald-600 border border-emerald-100'}
               `}>
                                 {msg.role === 'user' ? <User size={16} /> : <Bot size={16} />}
                             </div>
@@ -120,7 +120,7 @@ export default function ChatInterface({ refreshTrigger }) {
                             <div className={`
                 p-4 rounded-2xl max-w-[80%] text-sm leading-relaxed shadow-md font-medium
                 ${msg.role === 'user'
-                                    ? 'bg-emerald-600 text-white rounded-tr-none'
+                                    ? 'bg-blue-600 text-white rounded-tr-none'
                                     : 'bg-white text-emerald-800 rounded-tl-none border border-emerald-100'}
               `}>
                                 {msg.content}
