@@ -63,12 +63,14 @@ export default function FileUpload() {
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 className={`
           relative border-2 border-dashed rounded-xl p-8 cursor-pointer transition-all duration-300
-          flex flex-col items-center justify-center gap-4 group overflow-hidden
+          flex flex-col items-center justify-center gap-4 group overflow-hidden bg-white
           ${isDragging
-                        ? 'border-primary bg-primary/10 scale-[1.02] shadow-[0_0_30px_rgba(59,130,246,0.2)]'
-                        : 'border-white/10 hover:border-primary/50 hover:bg-white/5'}
+                        ? 'border-blue-500 bg-blue-50 shadow-[0_0_40px_rgba(59,130,246,0.3)]'
+                        : 'border-blue-200 hover:border-blue-400 hover:shadow-lg hover:shadow-blue-100'}
         `}
             >
                 <input
@@ -79,29 +81,32 @@ export default function FileUpload() {
                     onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
                 />
 
+                {/* Animated Background Gradients */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-blue-50 via-white to-purple-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
                 <div className="relative z-10 flex flex-col items-center">
-                    <div className={`p-4 rounded-full bg-surfaceHighlight mb-2 transition-transform duration-300 group-hover:scale-110 ${uploadStatus === 'uploading' ? 'animate-pulse' : ''}`}>
+                    <div className={`
+                        p-4 rounded-full mb-3 transition-all duration-300 shadow-md group-hover:shadow-blue-200 group-hover:scale-110
+                        ${isDragging ? 'bg-blue-100' : 'bg-gradient-to-br from-blue-50 to-indigo-50'}
+                    `}>
                         {uploadStatus === 'uploading' ? (
-                            <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                            <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
                         ) : uploadStatus === 'success' ? (
-                            <CheckCircle className="w-8 h-8 text-green-500" />
+                            <CheckCircle className="w-10 h-10 text-green-500 drop-shadow-sm" />
                         ) : uploadStatus === 'error' ? (
-                            <AlertCircle className="w-8 h-8 text-red-500" />
+                            <AlertCircle className="w-10 h-10 text-red-500 drop-shadow-sm" />
                         ) : (
-                            <Upload className="w-8 h-8 text-primary" />
+                            <Upload className="w-10 h-10 text-blue-500 group-hover:text-blue-600 transition-colors" />
                         )}
                     </div>
 
-                    <h3 className="text-lg font-medium text-textMain">
-                        {uploadStatus === 'uploading' ? 'Processing PDF...' : 'Upload Knowledge Base'}
+                    <h3 className="text-lg font-bold text-slate-800 group-hover:text-blue-700 transition-colors">
+                        {uploadStatus === 'uploading' ? 'Processing PDF...' : 'Upload PDF'}
                     </h3>
-                    <p className="text-sm text-textMuted text-center mt-1">
-                        Drag & drop a Samsung PDF here, or click to browse
+                    <p className="text-sm text-slate-500 text-center mt-1 font-medium group-hover:text-blue-500/80 transition-colors">
+                        Drag & drop or Click to Browse
                     </p>
                 </div>
-
-                {/* Background Gradient Effect */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
             </motion.div>
 
             <AnimatePresence>
@@ -111,8 +116,8 @@ export default function FileUpload() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
                         className={`mt-4 p-3 rounded-lg text-sm text-center border ${uploadStatus === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-200' :
-                                uploadStatus === 'success' ? 'bg-green-500/10 border-green-500/20 text-green-200' :
-                                    'bg-surfaceHighlight border-white/5 text-textMuted'
+                            uploadStatus === 'success' ? 'bg-green-500/10 border-green-500/20 text-green-200' :
+                                'bg-surfaceHighlight border-black/5 text-textMuted'
                             }`}
                     >
                         {message}

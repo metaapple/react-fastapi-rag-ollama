@@ -20,7 +20,7 @@ sentence_transformer_ef = embedding_functions.SentenceTransformerEmbeddingFuncti
 
 collection = chroma_client.get_or_create_collection(name="samsung_docs", embedding_function=sentence_transformer_ef)
 
-TEXT_SPLITTER = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+TEXT_SPLITTER = RecursiveCharacterTextSplitter(chunk_size=250, chunk_overlap=100)
 
 MODEL_NAME = "gemma3:1b" # As requested by user
 
