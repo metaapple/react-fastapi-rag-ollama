@@ -67,6 +67,7 @@ The UI is built with Tailwind CSS and allows for easy customization in `frontend
 
 
 <hr>
+<img width="1910" height="1023" alt="image" src="https://github.com/user-attachments/assets/d9606181-8370-4539-a8bb-eed222d8cffe" />
 
 <img width="1605" height="930" alt="image" src="https://github.com/user-attachments/assets/254cb420-0cef-49ec-9498-e62e1884e0ac" />
 
