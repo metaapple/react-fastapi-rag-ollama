@@ -2,6 +2,8 @@
 echo ===================================================
 echo   Samsung RAG Agent - Setup & Launch
 echo ===================================================
+echo ===================================================
+
 
 echo [1/4] Installing Backend Dependencies...
 cd backend
