@@ -12,13 +12,11 @@ warnings.filterwarnings("ignore", category=FutureWarning, message=".*np.object.*
 
 import chromadb
 from chromadb.utils import embedding_functions
-import ollama
 from pypdf import PdfReader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 import os
 import uuid
-
-MODEL_NAME = "gemma3:1b"
+from ollama_client import get_ollama_client, MODEL_NAME
 
 TEXT_SPLITTER = RecursiveCharacterTextSplitter(chunk_size=250, chunk_overlap=100)
 
@@ -107,7 +105,8 @@ def query_rag(query_text: str, source_filter: str = None):
     """
     
     try:
-        response = ollama.chat(model=MODEL_NAME, messages=[
+        ollama_client = get_ollama_client()
+        response = ollama_client.chat(model=MODEL_NAME, messages=[
             {'role': 'user', 'content': prompt},
         ])
         return response['message']['content']

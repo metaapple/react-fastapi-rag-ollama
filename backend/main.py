@@ -8,6 +8,7 @@ import os
 
 from database import SessionLocal, init_db, ChatMessage
 import rag_service
+from ollama_client import init_ollama_client
 
 app = FastAPI(title="Samsung RAG Agent", description="RAG Chatbot with Black Theme")
 
@@ -22,6 +23,17 @@ app.add_middleware(
 
 # Init DB
 init_db()
+
+# Startup event: Initialize Ollama client when FastAPI starts
+@app.on_event("startup")
+async def startup_event():
+    """FastAPI 시작 시 Ollama 클라이언트를 초기화합니다."""
+    try:
+        init_ollama_client()
+        print("FastAPI startup: Ollama client initialized successfully.")
+    except Exception as e:
+        print(f"Warning: Failed to initialize Ollama client during startup: {e}")
+        print("Ollama client will be initialized on first use.")
 
 # Dependency
 def get_db():
